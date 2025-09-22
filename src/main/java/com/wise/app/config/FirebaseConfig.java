@@ -16,14 +16,17 @@ public class FirebaseConfig {
 
     @Bean
     public Firestore firestore() throws IOException {
+        // credentials json이 null이면 명확한 예외
         InputStream serviceAccount = getClass().getClassLoader()
                 .getResourceAsStream("wsie-db-firebase-adminsdk-fbsvc-4b52e07dba.json");
-
-        FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
+        if (serviceAccount == null) {
+            throw new IllegalStateException("Firebase credentials file not found in resources");
+        }
 
         if (FirebaseApp.getApps().isEmpty()) {
+            FirebaseOptions options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .build();
             FirebaseApp.initializeApp(options);
         }
 

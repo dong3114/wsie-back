@@ -1,30 +1,22 @@
 package com.wise.app.controller;
 
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.wise.app.dto.WasteReport;
 import com.wise.app.service.WasteReportService;
+import com.google.cloud.firestore.*; // Firestore import
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/waste-reports")
+@RequiredArgsConstructor
 public class WasteReportController {
 
     private final WasteReportService service;
-
-    @Autowired
-    public WasteReportController(WasteReportService service) {
-        this.service = service;
-    }
+    private final Firestore firestore; // ⬅ Firestore Bean 주입
 
     // 저장
     @PostMapping
@@ -55,5 +47,15 @@ public class WasteReportController {
         } catch (Exception e) {
             return ResponseEntity.status(404).body(Map.of("error", e.getMessage()));
         }
+    }
+
+    @Operation(summary="잔반 TOP N", description="wasteRatio(desc) 상위 N")
+    @GetMapping("/top")
+    public ResponseEntity<?> top(@RequestParam(defaultValue="5") int limit) throws Exception {
+        var docs = firestore.collection("waste_reports")
+                .orderBy("wasteRatio", Query.Direction.DESCENDING)
+                .limit(limit).get().get().getDocuments();
+        var list = docs.stream().map(DocumentSnapshot::getData).toList();
+        return ResponseEntity.ok(list);
     }
 }
