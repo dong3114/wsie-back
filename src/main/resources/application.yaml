@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+wsie:
+  callback:
+    api-key: "f74599335ac633c1aa6841ae8e8d1d285f27eb7a14cf26e1d52ad789794ead09"
+  py:
+    base-url: "http://localhost:8000"
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+  api-docs:
+    path: /v3/api-docs
