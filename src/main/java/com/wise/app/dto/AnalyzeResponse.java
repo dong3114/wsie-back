@@ -1,10 +1,18 @@
+// com/wise/app/dto/AnalyzeResponse.java
 package com.wise.app.dto;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 
-@Data
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class AnalyzeResponse {
+    @JsonProperty("menu")
     private String menu;
-    private Double waste_ratio;
+
+    @JsonProperty("waste_ratio")
+    private Double wasteRatio;
+
+    @JsonProperty("suggestion")
     private String suggestion;
 }
